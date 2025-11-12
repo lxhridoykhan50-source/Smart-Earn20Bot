@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMART EARN SERVER UPDATE</title>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAbbvEUnjEnbOPtZJyqL-CUEDy_nAZtGT4",
+      authDomain: "hridoy-f9c90.firebaseapp.com",
+      databaseURL: "https://hridoy-f9c90-default-rtdb.firebaseio.com",
+      projectId: "hridoy-f9c90",
+      storageBucket: "hridoy-f9c90.firebasestorage.app",
+      messagingSenderId: "378490678321",
+      appId: "1:378490678321:web:623f8de0c24dda4dfdb910",
+      measurementId: "G-5X6Z7BWTFY"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
+
+  <style>
+    /* === BASIC STYLE === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #00111f, #000);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    /* === TITLE === */
+    h1 {
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+      color: #00e0ff;
+      text-shadow: 0 0 15px #00e0ff;
+      margin-bottom: 25px;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #00e0ff; }
+      to { text-shadow: 0 0 30px #00e0ff; }
+    }
+
+    /* === BOX === */
+    .update-box {
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+      width: 350px;
+      padding: 40px 30px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      transition: all 0.4s ease;
+    }
+
+    /* === STATUS TEXT === */
+    .status {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      color: #ffcc00;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    /* === COUNTDOWN === */
+    .timer {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #00ffea;
+      text-shadow: 0 0 15px #00ffe0;
+      margin-bottom: 20px;
+      transition: all 0.5s ease;
+    }
+
+    /* === PROGRESS BAR === */
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #00e0ff, #00ff9f);
+      width: 0%;
+      transition: width 1s linear;
+    }
+
+    /* === SUCCESS === */
+    .success {
+      color: #00ff9f;
+      font-size: 1.5rem;
+      font-weight: bold;
+      animation: pop 1.5s ease forwards;
+    }
+
+    @keyframes pop {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Background Animation */
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(0, 255, 255, 0.15);
+      animation: float 10s infinite ease-in-out;
+    }
+
+    .circle:nth-child(1) {
+      width: 200px; height: 200px; top: 10%; left: 10%; animation-delay: 0s;
+    }
+    .circle:nth-child(2) {
+      width: 300px; height: 300px; bottom: 10%; right: 10%; animation-delay: 5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="circle"></div>
+  <div class="circle"></div>
+
+  <h1>SERVER UPDATE</h1>
+  <div class="update-box" id="updateBox">
+    <div class="status" id="statusText">Project is Updating...</div>
+    <div class="timer" id="timer">Loading...</div>
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+  </div>
+
+  <script>
+    const timerElement = document.getElementById("timer");
+    const statusText = document.getElementById("statusText");
+    const progressBar = document.getElementById("progress");
+    const box = document.getElementById("updateBox");
+
+    // 24 hours countdown (store in localStorage)
+    const savedTime = localStorage.getItem("targetTime");
+    let targetTime;
+
+    if (savedTime) {
+      targetTime = new Date(savedTime);
+    } else {
+      targetTime = new Date();
+      targetTime.setHours(targetTime.getHours() + 24);
+      localStorage.setItem("targetTime", targetTime);
+    }
+
+    const totalDuration = 24 * 60 * 60 * 1000; // 24 hours in ms
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = targetTime - now;
+
+      if (distance <= 0) {
+        timerElement.innerHTML = "✅ UPDATE SUCCESSFUL";
+        statusText.innerHTML = "Server is Now Live";
+        timerElement.classList.add("success");
+        box.style.boxShadow = "0 0 25px #00ff9f";
+        progressBar.style.width = "100%";
+        localStorage.removeItem("targetTime");
+        return;
+      }
+
+      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((distance / (1000 * 60)) % 60);
+      const seconds = Math.floor((distance / 1000) % 60);
+
+      timerElement.innerHTML = `${hours.toString().padStart(2, "0")} : ${minutes
+        .toString()
+        .padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`;
+
+      const progress = ((totalDuration - distance) / totalDuration) * 100;
+      progressBar.style.width = progress + "%";
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
